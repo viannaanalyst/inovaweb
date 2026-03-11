@@ -1,23 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { cloudflare } from "@cloudflare/vite-plugin";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-const config = {
+export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    cloudflare(),
+    mode === 'development' && componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-};
-
-if (process.env.NODE_ENV === 'development') {
-  config.plugins.push(componentTagger());
-}
-
-export default defineConfig(config);
+}));
